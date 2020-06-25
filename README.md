@@ -16,5 +16,5 @@ The initial project was split in 3 microservices:
 | Service Name | Port | 
 | --------| -----|
 | [SBM Beer Service](https://github.com/mariamihai/udemy-sbm-beer-service) | 8080 |
-| BM  Beer Order Service [current project] | 8081 |
+| SBM  Beer Order Service [current project] | 8081 |
 | [SBM Beer Inventory Service](https://github.com/mariamihai/udemy-sbm-beer-inventory-service) | 8082 |
