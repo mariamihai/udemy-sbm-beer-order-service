@@ -33,7 +33,7 @@ public class TastingRoomService {
     }
 
     @Transactional
-    @Scheduled(fixedRate = 2000)
+    @Scheduled(fixedRate = 5000)
     public void placeTastingRoomOrder() {
         List<Customer> customerList = customerRepository.findAllByCustomerNameLike(BeerLoader.TASTING_ROOM);
 
@@ -47,21 +47,21 @@ public class TastingRoomService {
     private void doPlaceOrder(Customer customer) {
         String randomBeerUpc = getRandomBeerUpc();
 
-        BeerOrderLineDto beerOrderLine = BeerOrderLineDto.builder()
+        BeerOrderLineDto beerOrderLineDto = BeerOrderLineDto.builder()
                 .upc(randomBeerUpc)
                 .orderQuantity(getRandomIntegerForQuantity())
                 .build();
 
-        List<BeerOrderLineDto> beerOrderLineDtos = new ArrayList<>();
-        beerOrderLineDtos.add(beerOrderLine);
+        List<BeerOrderLineDto> beerOrderLineDtoList = new ArrayList<>();
+        beerOrderLineDtoList.add(beerOrderLineDto);
 
-        BeerOrderDto beerOrder = BeerOrderDto.builder()
+        BeerOrderDto beerOrderDto = BeerOrderDto.builder()
                 .customerId(customer.getId())
                 .customerRef(UUID.randomUUID().toString())
-                .beerOrderLines(beerOrderLineDtos)
+                .beerOrderLines(beerOrderLineDtoList)
                 .build();
 
-        beerOrderService.placeOrder(customer.getId(), beerOrder);
+        beerOrderService.placeOrder(customer.getId(), beerOrderDto);
     }
 
     private String getRandomBeerUpc() {

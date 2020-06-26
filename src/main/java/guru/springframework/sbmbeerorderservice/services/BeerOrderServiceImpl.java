@@ -37,22 +37,18 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
     @Override
     public BeerOrderPagedList listOrders(UUID customerId, Pageable pageable) {
-        Optional<Customer> customerOptional = customerRepository.findById(customerId);
+        Customer customer = customerRepository.findById(customerId).orElseThrow(NotFoundException::new);
 
-        if(customerOptional.isPresent()) {
-            Page<BeerOrder> beerOrderPage = beerOrderRepository.findAllByCustomer(customerOptional.get(), pageable);
+        Page<BeerOrder> beerOrderPage = beerOrderRepository.findAllByCustomer(customer, pageable);
 
-            return new BeerOrderPagedList(
-                        beerOrderPage.stream()
-                                     .map(beerOrderMapper::beerOrderToDto)
-                                     .collect(Collectors.toList()),
-                        PageRequest.of(
-                                beerOrderPage.getPageable().getPageNumber(),
-                                beerOrderPage.getPageable().getPageSize()),
-                        beerOrderPage.getTotalElements());
-        }
-
-        return null;
+        return new BeerOrderPagedList(
+                    beerOrderPage.stream()
+                                 .map(beerOrderMapper::beerOrderToDto)
+                                 .collect(Collectors.toList()),
+                    PageRequest.of(
+                            beerOrderPage.getPageable().getPageNumber(),
+                            beerOrderPage.getPageable().getPageSize()),
+                    beerOrderPage.getTotalElements());
     }
 
     @Override
@@ -62,7 +58,6 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
         if(customerOptional.isPresent()) {
             BeerOrder beerOrder = beerOrderMapper.dtoToBeerOrder(beerOrderDto);
-            beerOrder.setId(null);
             beerOrder.setCustomer(customerOptional.get());
             beerOrder.setOrderStatus(OrderStatusEnum.NEW);
 
