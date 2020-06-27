@@ -69,6 +69,6 @@ public class TastingRoomService {
     }
 
     private Integer getRandomIntegerForQuantity() {
-        return new Random().nextInt(5);
+        return new Random().nextInt(5) + 1;
     }
 }
