@@ -1,4 +1,4 @@
-package guru.springframework.sbmbeerorderservice.services.beer.model;
+package guru.springframework.sbmbeerorderservice.web.model.events;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;

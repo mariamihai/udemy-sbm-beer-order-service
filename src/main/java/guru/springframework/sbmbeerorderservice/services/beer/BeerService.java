@@ -1,6 +1,6 @@
 package guru.springframework.sbmbeerorderservice.services.beer;
 
-import guru.springframework.sbmbeerorderservice.services.beer.model.BeerDto;
+import guru.springframework.sbmbeerorderservice.web.model.events.BeerDto;
 
 import java.util.Optional;
 import java.util.UUID;

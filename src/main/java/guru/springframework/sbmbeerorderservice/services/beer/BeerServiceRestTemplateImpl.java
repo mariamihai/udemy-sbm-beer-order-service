@@ -1,6 +1,6 @@
 package guru.springframework.sbmbeerorderservice.services.beer;
 
-import guru.springframework.sbmbeerorderservice.services.beer.model.BeerDto;
+import guru.springframework.sbmbeerorderservice.web.model.events.BeerDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
