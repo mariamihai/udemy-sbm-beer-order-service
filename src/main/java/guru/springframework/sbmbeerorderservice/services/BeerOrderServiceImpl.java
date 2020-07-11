@@ -2,7 +2,7 @@ package guru.springframework.sbmbeerorderservice.services;
 
 import guru.springframework.sbmbeerorderservice.domain.BeerOrder;
 import guru.springframework.sbmbeerorderservice.domain.Customer;
-import guru.springframework.sbmbeerorderservice.domain.OrderStatusEnum;
+import guru.springframework.sbmbeerorderservice.domain.BeerOrderStatusEnum;
 import guru.springframework.sbmbeerorderservice.repositories.BeerOrderRepository;
 import guru.springframework.sbmbeerorderservice.repositories.CustomerRepository;
 import guru.springframework.sbmbeerorderservice.web.controllers.NotFoundException;
@@ -59,7 +59,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
         if(customerOptional.isPresent()) {
             BeerOrder beerOrder = beerOrderMapper.dtoToBeerOrder(beerOrderDto);
             beerOrder.setCustomer(customerOptional.get());
-            beerOrder.setOrderStatus(OrderStatusEnum.NEW);
+            beerOrder.setOrderStatus(BeerOrderStatusEnum.NEW);
 
             beerOrder.getBeerOrderLines().forEach(line -> line.setBeerOrder(beerOrder));
 
@@ -81,7 +81,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
     @Override
     public void pickupOrder(UUID customerId, UUID orderId) {
         BeerOrder beerOrder = getOrder(customerId, orderId);
-        beerOrder.setOrderStatus(OrderStatusEnum.PICKED_UP);
+        beerOrder.setOrderStatus(BeerOrderStatusEnum.PICKED_UP);
 
         beerOrderRepository.save(beerOrder);
     }
