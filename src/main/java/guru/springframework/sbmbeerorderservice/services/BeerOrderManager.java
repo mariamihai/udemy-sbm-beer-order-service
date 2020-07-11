@@ -9,4 +9,6 @@ public interface BeerOrderManager {
     BeerOrder newBeerOrder(BeerOrder beerOrder);
 
     void validateBeerOrder(UUID beerOrderId, boolean valid);
+
+    void allocateValidBeerOrder(UUID beerOrderId);
 }

@@ -23,7 +23,8 @@ public class BeerOrderStateMachineConfig extends StateMachineConfigurerAdapter<B
     private final Guard<BeerOrderStatusEnum, BeerOrderEventEnum> beerOrderIdGuard;
 
     private final Action<BeerOrderStatusEnum, BeerOrderEventEnum> validateBeerOrderAction;
-    
+    private final Action<BeerOrderStatusEnum, BeerOrderEventEnum> allocateOrderAction;
+
     @Override
     public void configure(StateMachineStateConfigurer<BeerOrderStatusEnum, BeerOrderEventEnum> states) throws Exception {
         states.withStates()
@@ -51,6 +52,19 @@ public class BeerOrderStateMachineConfig extends StateMachineConfigurerAdapter<B
             .and().withExternal()
                 .source(BeerOrderStatusEnum.VALIDATION_PENDING)
                 .target(BeerOrderStatusEnum.VALIDATION_EXCEPTION)
-                .event(BeerOrderEventEnum.VALIDATION_FAILURE);
+                .event(BeerOrderEventEnum.VALIDATION_FAILURE)
+            .and().withExternal()
+                .source(BeerOrderStatusEnum.VALIDATED)
+                .target(BeerOrderStatusEnum.ALLOCATION_PENDING)
+                .event(BeerOrderEventEnum.ALLOCATE_ORDER)
+                .action(allocateOrderAction)
+            .and().withExternal()
+                .source(BeerOrderStatusEnum.ALLOCATION_PENDING)
+                .target(BeerOrderStatusEnum.ALLOCATED)
+                .event(BeerOrderEventEnum.ALLOCATION_SUCCESS)
+            .and().withExternal()
+                .source(BeerOrderStatusEnum.ALLOCATION_PENDING)
+                .target(BeerOrderStatusEnum.ALLOCATION_EXCEPTION)
+                .event(BeerOrderEventEnum.ALLOCATION_FAILED);
     }
 }
