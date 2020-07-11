@@ -2,19 +2,24 @@ package guru.springframework.sbmbeerorderservice.statemachine;
 
 import guru.springframework.sbmbeerorderservice.domain.BeerOrderEventEnum;
 import guru.springframework.sbmbeerorderservice.domain.BeerOrderStatusEnum;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.StateMachineConfigurerAdapter;
 import org.springframework.statemachine.config.builders.StateMachineStateConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
+import org.springframework.statemachine.guard.Guard;
 
 import java.util.EnumSet;
 
 @Configuration
 @EnableStateMachineFactory
+@RequiredArgsConstructor
 public class BeerOrderStateMachineConfig extends StateMachineConfigurerAdapter<BeerOrderStatusEnum, BeerOrderEventEnum> {
 
     public static final String BEER_ORDER_HEADER_ID = "beer-order-header-id";
+
+    private final Guard<BeerOrderStatusEnum, BeerOrderEventEnum> beerOrderIdGuard;
     
     @Override
     public void configure(StateMachineStateConfigurer<BeerOrderStatusEnum, BeerOrderEventEnum> states) throws Exception {
@@ -31,7 +36,7 @@ public class BeerOrderStateMachineConfig extends StateMachineConfigurerAdapter<B
     @Override
     public void configure(StateMachineTransitionConfigurer<BeerOrderStatusEnum, BeerOrderEventEnum> transitions) throws Exception {
         transitions
-            .withExternal().source(BeerOrderStatusEnum.NEW).target(BeerOrderStatusEnum.NEW).event(BeerOrderEventEnum.VALIDATE_ORDER)
+            .withExternal().source(BeerOrderStatusEnum.NEW).target(BeerOrderStatusEnum.NEW).event(BeerOrderEventEnum.VALIDATE_ORDER).guard(beerOrderIdGuard)
             .and()
             .withExternal().source(BeerOrderStatusEnum.NEW).target(BeerOrderStatusEnum.VALIDATED).event(BeerOrderEventEnum.VALIDATION_PASSED)
             .and()
