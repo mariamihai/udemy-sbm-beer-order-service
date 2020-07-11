@@ -4,6 +4,7 @@ import guru.springframework.sbmbeerorderservice.domain.BeerOrder;
 import guru.springframework.sbmbeerorderservice.domain.BeerOrderEventEnum;
 import guru.springframework.sbmbeerorderservice.domain.BeerOrderStatusEnum;
 import guru.springframework.sbmbeerorderservice.repositories.BeerOrderRepository;
+import guru.springframework.sbmbeerorderservice.statemachine.BeerOrderStateChangeInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
@@ -12,12 +13,15 @@ import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.stereotype.Service;
 
+import static guru.springframework.sbmbeerorderservice.statemachine.BeerOrderStateMachineConfig.BEER_ORDER_HEADER_ID;
+
 @RequiredArgsConstructor
 @Service
 public class BeerOrderManagerImpl implements BeerOrderManager {
 
-    private final StateMachineFactory<BeerOrderStatusEnum, BeerOrderEventEnum> factory;
     private final BeerOrderRepository beerOrderRepository;
+    private final StateMachineFactory<BeerOrderStatusEnum, BeerOrderEventEnum> factory;
+    private final BeerOrderStateChangeInterceptor beerOrderStateChangeInterceptor;
 
     @Override
     public BeerOrder newBeerOrder(BeerOrder beerOrder) {
@@ -35,6 +39,7 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
         StateMachine<BeerOrderStatusEnum, BeerOrderEventEnum> stateMachine = build(beerOrder);
 
         Message<BeerOrderEventEnum> message = MessageBuilder.withPayload(event)
+                .setHeader(BEER_ORDER_HEADER_ID, beerOrder.getId().toString())
                 .build();
 
         stateMachine.sendEvent(message);
@@ -46,8 +51,10 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
         stateMachine.stop();
 
         stateMachine.getStateMachineAccessor()
-                .doWithAllRegions(stateMachineAccessor ->
-                        stateMachineAccessor.resetStateMachine(new DefaultStateMachineContext<>(beerOrder.getOrderStatus(), null, null, null)));
+                .doWithAllRegions(stateMachineAccessor -> {
+                    stateMachineAccessor.addStateMachineInterceptor(beerOrderStateChangeInterceptor);
+                    stateMachineAccessor.resetStateMachine(new DefaultStateMachineContext<>(beerOrder.getOrderStatus(), null, null, null));
+                });
 
 
         stateMachine.start();

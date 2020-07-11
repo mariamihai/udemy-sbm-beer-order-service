@@ -14,6 +14,8 @@ import java.util.EnumSet;
 @EnableStateMachineFactory
 public class BeerOrderStateMachineConfig extends StateMachineConfigurerAdapter<BeerOrderStatusEnum, BeerOrderEventEnum> {
 
+    public static final String BEER_ORDER_HEADER_ID = "beer-order-header-id";
+    
     @Override
     public void configure(StateMachineStateConfigurer<BeerOrderStatusEnum, BeerOrderEventEnum> states) throws Exception {
         states.withStates()
