@@ -4,6 +4,7 @@ import guru.springframework.sbmbeerorderservice.domain.BeerOrderEventEnum;
 import guru.springframework.sbmbeerorderservice.domain.BeerOrderStatusEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.StateMachineConfigurerAdapter;
 import org.springframework.statemachine.config.builders.StateMachineStateConfigurer;
@@ -20,6 +21,8 @@ public class BeerOrderStateMachineConfig extends StateMachineConfigurerAdapter<B
     public static final String BEER_ORDER_HEADER_ID = "beer-order-header-id";
 
     private final Guard<BeerOrderStatusEnum, BeerOrderEventEnum> beerOrderIdGuard;
+
+    private final Action<BeerOrderStatusEnum, BeerOrderEventEnum> validateBeerOrderAction;
     
     @Override
     public void configure(StateMachineStateConfigurer<BeerOrderStatusEnum, BeerOrderEventEnum> states) throws Exception {
@@ -35,11 +38,19 @@ public class BeerOrderStateMachineConfig extends StateMachineConfigurerAdapter<B
 
     @Override
     public void configure(StateMachineTransitionConfigurer<BeerOrderStatusEnum, BeerOrderEventEnum> transitions) throws Exception {
-        transitions
-            .withExternal().source(BeerOrderStatusEnum.NEW).target(BeerOrderStatusEnum.NEW).event(BeerOrderEventEnum.VALIDATE_ORDER).guard(beerOrderIdGuard)
-            .and()
-            .withExternal().source(BeerOrderStatusEnum.NEW).target(BeerOrderStatusEnum.VALIDATED).event(BeerOrderEventEnum.VALIDATION_PASSED)
-            .and()
-            .withExternal().source(BeerOrderStatusEnum.NEW).target(BeerOrderStatusEnum.VALIDATION_EXCEPTION).event(BeerOrderEventEnum.VALIDATION_FAILURE);
+        transitions.withExternal()
+                .source(BeerOrderStatusEnum.NEW)
+                .target(BeerOrderStatusEnum.NEW)
+                .event(BeerOrderEventEnum.VALIDATE_ORDER)
+                .action(validateBeerOrderAction)
+                .guard(beerOrderIdGuard)
+            .and().withExternal()
+                .source(BeerOrderStatusEnum.NEW)
+                .target(BeerOrderStatusEnum.VALIDATED)
+                .event(BeerOrderEventEnum.VALIDATION_PASSED)
+            .and().withExternal()
+                .source(BeerOrderStatusEnum.NEW)
+                .target(BeerOrderStatusEnum.VALIDATION_EXCEPTION)
+                .event(BeerOrderEventEnum.VALIDATION_FAILURE);
     }
 }
