@@ -3,6 +3,7 @@ package guru.springframework.sbmbeerorderservice.statemachine.actions;
 import guru.springframework.sbmbeerorderservice.domain.BeerOrder;
 import guru.springframework.sbmbeerorderservice.domain.BeerOrderEventEnum;
 import guru.springframework.sbmbeerorderservice.domain.BeerOrderStatusEnum;
+import guru.springframework.sbmbeerorderservice.services.JmsMessageService;
 import guru.springframework.sbmbeerorderservice.web.model.events.ValidateBeerOrderRequest;
 import guru.springframework.sbmbeerorderservice.repositories.BeerOrderRepository;
 import guru.springframework.sbmbeerorderservice.web.mappers.BeerOrderMapper;
@@ -26,6 +27,7 @@ public class ValidateBeerOrderAction implements Action<BeerOrderStatusEnum, Beer
     private final BeerOrderRepository beerOrderRepository;
     private final JmsTemplate jmsTemplate;
     private final BeerOrderMapper beerOrderMapper;
+    private final JmsMessageService jmsMessageService;
 
     @Override
     public void execute(StateContext<BeerOrderStatusEnum, BeerOrderEventEnum> context) {
@@ -33,6 +35,9 @@ public class ValidateBeerOrderAction implements Action<BeerOrderStatusEnum, Beer
         BeerOrder beerOrder = beerOrderRepository.getOne(beerOrderId);
 
         jmsTemplate.convertAndSend(VALIDATE_ORDER_QUEUE, new ValidateBeerOrderRequest(beerOrderMapper.beerOrderToDto(beerOrder)));
+        jmsMessageService.sendJmsMessage(VALIDATE_ORDER_QUEUE,
+                new ValidateBeerOrderRequest(beerOrderMapper.beerOrderToDto(beerOrder)),
+                ValidateBeerOrderRequest.class.getSimpleName());
 
         log.debug("Sent validation request for beerOrderId - " + beerOrderId);
     }
