@@ -9,6 +9,7 @@ import guru.springframework.sbmbeerorderservice.web.controllers.NotFoundExceptio
 import guru.springframework.sbmbeerorderservice.web.mappers.BeerOrderMapper;
 import guru.springframework.sbmbeerorderservice.web.model.BeerOrderDto;
 import guru.springframework.sbmbeerorderservice.web.model.BeerOrderPagedList;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,18 +23,13 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class BeerOrderServiceImpl implements BeerOrderService {
 
     private final BeerOrderRepository beerOrderRepository;
     private final BeerOrderMapper beerOrderMapper;
     private final CustomerRepository customerRepository;
-
-    public BeerOrderServiceImpl(BeerOrderRepository beerOrderRepository, BeerOrderMapper beerOrderMapper,
-                                CustomerRepository customerRepository) {
-        this.beerOrderRepository = beerOrderRepository;
-        this.beerOrderMapper = beerOrderMapper;
-        this.customerRepository = customerRepository;
-    }
+    private final BeerOrderManager beerOrderManager;
 
     @Override
     public BeerOrderPagedList listOrders(UUID customerId, Pageable pageable) {
@@ -66,6 +62,9 @@ public class BeerOrderServiceImpl implements BeerOrderService {
             BeerOrder savedBeerOrder = beerOrderRepository.saveAndFlush(beerOrder);
 
             log.debug("Saved Beer Order: " + savedBeerOrder.getId());
+
+            // TODO - uncomment for the allocation order to work
+//            beerOrderManager.newBeerOrder(beerOrderMapper.dtoToBeerOrder(beerOrderDto));
 
             return beerOrderMapper.beerOrderToDto(savedBeerOrder);
         }

@@ -1,6 +1,7 @@
 package guru.springframework.sbmbeerorderservice.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import guru.springframework.sbmbeerorderservice.web.model.events.AllocateBeerOrderResult;
 import guru.springframework.sbmbeerorderservice.web.model.events.ValidateBeerOrderRequest;
 import guru.springframework.sbmbeerorderservice.web.model.events.ValidateBeerOrderResult;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,7 @@ public class JmsConfig {
     public static final String VALIDATE_ORDER_QUEUE = "validate-order";
     public static final String VALIDATE_ORDER_RESULT_QUEUE = "validate-order-result";
     public static final String ALLOCATE_ORDER_QUEUE = "allocate-order";
+    public static final String ALLOCATE_ORDER_RESPONSE_QUEUE = "allocate-order-response";
 
     @Bean
     public MessageConverter messageConverter(ObjectMapper objectMapper) {
@@ -35,6 +37,7 @@ public class JmsConfig {
         Map<String,Class<?>> typeIdMappings = new HashMap<>();
         typeIdMappings.put(ValidateBeerOrderRequest.class.getSimpleName(), ValidateBeerOrderRequest.class);
         typeIdMappings.put(ValidateBeerOrderResult.class.getSimpleName(), ValidateBeerOrderResult.class);
+        typeIdMappings.put(AllocateBeerOrderResult.class.getSimpleName(), AllocateBeerOrderResult.class);
 
         return typeIdMappings;
     }
