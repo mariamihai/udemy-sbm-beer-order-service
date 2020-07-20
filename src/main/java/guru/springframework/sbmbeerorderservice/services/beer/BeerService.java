@@ -10,4 +10,10 @@ public interface BeerService {
     Optional<BeerDto> getBeerById(UUID uuid);
 
     Optional<BeerDto> getBeerByUpc(String upc);
+
+    String getBeerServiceHost();
+
+    String getBeerPath();
+
+    String getBeerUpcPath();
 }

@@ -25,16 +25,28 @@ public class BeerServiceRestTemplateImpl implements BeerService {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    public void setBeerServiceHost(String beerServiceHost) {
-        this.beerServiceHost = beerServiceHost;
+    public void setBeerServiceHost(String host) {
+        beerServiceHost = host;
     }
 
-    public void setBeerPath(String beerPath) {
-        this.beerPath = beerPath;
+    public void setBeerPath(String path) {
+        beerPath = path;
     }
 
-    public void setBeerUpcPath(String beerUpcPath) {
-        this.beerUpcPath = beerUpcPath;
+    public void setBeerUpcPath(String upcPath) {
+        beerUpcPath = upcPath;
+    }
+
+    public String getBeerServiceHost() {
+        return beerServiceHost;
+    }
+
+    public String getBeerPath() {
+        return beerPath;
+    }
+
+    public String getBeerUpcPath() {
+        return beerUpcPath;
     }
 
     @Override
