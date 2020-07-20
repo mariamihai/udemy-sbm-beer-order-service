@@ -14,6 +14,7 @@ import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static guru.springframework.sbmbeerorderservice.statemachine.BeerOrderStateMachineConfig.BEER_ORDER_HEADER_ID;
@@ -30,12 +31,14 @@ public class AllocateOrderAction implements Action<BeerOrderStatusEnum, BeerOrde
     @Override
     public void execute(StateContext<BeerOrderStatusEnum, BeerOrderEventEnum> context) {
         UUID beerOrderId = UUID.fromString((String) context.getMessageHeader(BEER_ORDER_HEADER_ID));
-        BeerOrder beerOrder = beerOrderRepository.getOne(beerOrderId);
+        Optional<BeerOrder> optionalBeerOrder = beerOrderRepository.findById(beerOrderId);
 
-        jmsMessageService.sendJmsMessage(JmsConfig.ALLOCATE_ORDER_QUEUE,
-                AllocateBeerOrderRequest.builder().beerOrderDto(beerOrderMapper.beerOrderToDto(beerOrder)).build(),
-                AllocateBeerOrderRequest.class.getSimpleName());
+        optionalBeerOrder.ifPresentOrElse(beerOrder -> {
+            jmsMessageService.sendJmsMessage(JmsConfig.ALLOCATE_ORDER_QUEUE,
+                    AllocateBeerOrderRequest.builder().beerOrderDto(beerOrderMapper.beerOrderToDto(beerOrder)).build(),
+                    AllocateBeerOrderRequest.class.getSimpleName());
 
-        log.debug("Sent Allocation Request for beerOrderId - " + beerOrderId);
+            log.debug("Sent Allocation Request for beerOrderId - " + beerOrderId);
+        }, () -> log.error("Couldn't send Allocation Request for beerOrderId - " + beerOrderId));
     }
 }

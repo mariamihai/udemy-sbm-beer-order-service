@@ -12,6 +12,7 @@ import guru.springframework.sbmbeerorderservice.repositories.BeerOrderRepository
 import guru.springframework.sbmbeerorderservice.repositories.CustomerRepository;
 import guru.springframework.sbmbeerorderservice.services.beer.BeerService;
 import guru.springframework.sbmbeerorderservice.web.model.events.BeerDto;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -30,6 +32,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@Slf4j
 @SpringBootTest
 @ExtendWith(WireMockExtension.class)
 class BeerOrderManagerImplIT {
@@ -77,16 +80,19 @@ class BeerOrderManagerImplIT {
     }
 
     @Test
-    void testNewToAllocate() throws JsonProcessingException {
+    void testNewToAllocate() throws JsonProcessingException, InterruptedException {
         String stringBeerDto = objectMapper.writeValueAsString(createBeerDto());
         wireMockServer.stubFor(get(beerService.getBeerUpcPath() + upc).willReturn(okJson(stringBeerDto)));
 
         BeerOrder beerOrder = createBeerOrder();
 
         BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
-        assertNotNull(savedBeerOrder);
 
-        assertEquals(BeerOrderStatusEnum.ALLOCATED, beerOrder.getOrderStatus());
+        Thread.sleep(5000);
+        savedBeerOrder = beerOrderRepository.findById(savedBeerOrder.getId()).get();
+
+        assertNotNull(savedBeerOrder);
+        assertEquals(BeerOrderStatusEnum.ALLOCATED, savedBeerOrder.getOrderStatus());
     }
 
     private BeerDto createBeerDto() {
@@ -99,12 +105,16 @@ class BeerOrderManagerImplIT {
         BeerOrder beerOrder = BeerOrder.builder()
                 .customer(customer)
                 .build();
-        beerOrder.setBeerOrderLines(Set.of(BeerOrderLine.builder()
+
+        Set<BeerOrderLine> lines = new HashSet<>();
+        lines.add(BeerOrderLine.builder()
                 .beerId(beerId)
                 .upc(upc)
                 .orderQuantity(1)
                 .beerOrder(beerOrder)
-                .build()));
+                .build());
+
+        beerOrder.setBeerOrderLines(lines);
 
         return beerOrder;
     }
