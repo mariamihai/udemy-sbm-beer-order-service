@@ -59,13 +59,9 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
             beerOrder.getBeerOrderLines().forEach(line -> line.setBeerOrder(beerOrder));
 
-            BeerOrder savedBeerOrder = beerOrderRepository.saveAndFlush(beerOrder);
+            BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrderMapper.dtoToBeerOrder(beerOrderDto));
 
             log.debug("Saved Beer Order: " + savedBeerOrder.getId());
-
-            // TODO - uncomment for the allocation order to work
-//            beerOrderManager.newBeerOrder(beerOrderMapper.dtoToBeerOrder(beerOrderDto));
-
             return beerOrderMapper.beerOrderToDto(savedBeerOrder);
         }
 
@@ -79,10 +75,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
     @Override
     public void pickupOrder(UUID customerId, UUID orderId) {
-        BeerOrder beerOrder = getOrder(customerId, orderId);
-        beerOrder.setOrderStatus(BeerOrderStatusEnum.PICKED_UP);
-
-        beerOrderRepository.save(beerOrder);
+        beerOrderManager.beerOrderPickedUp(orderId);
     }
 
     private BeerOrder getOrder(UUID customerId, UUID orderId) {

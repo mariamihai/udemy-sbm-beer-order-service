@@ -33,7 +33,7 @@ public class TastingRoomService {
     }
 
     @Transactional
-    @Scheduled(fixedRate = 120000)
+//    @Scheduled(fixedRate = 120000)
     public void placeTastingRoomOrder() {
         List<Customer> customerList = customerRepository.findAllByCustomerNameLike(BeerLoader.TASTING_ROOM);
 
