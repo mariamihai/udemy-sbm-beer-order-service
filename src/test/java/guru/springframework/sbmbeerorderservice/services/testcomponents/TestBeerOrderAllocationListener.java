@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
-import static guru.springframework.sbmbeerorderservice.services.testcomponents.ITConfig.*;
+import static guru.springframework.sbmbeerorderservice.services.testcomponents.ITUtil.*;
 
 @Component
 @RequiredArgsConstructor

@@ -1,9 +1,6 @@
 package guru.springframework.sbmbeerorderservice.services.testcomponents;
 
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-public class ITConfig {
+public class ITUtil {
 
     public static final String FAILED_VALIDATION = "fail-validation";
 
