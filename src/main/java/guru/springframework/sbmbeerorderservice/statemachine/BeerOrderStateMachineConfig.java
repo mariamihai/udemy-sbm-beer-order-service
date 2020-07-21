@@ -23,6 +23,7 @@ public class BeerOrderStateMachineConfig extends StateMachineConfigurerAdapter<B
     private final Guard<BeerOrderStatusEnum, BeerOrderEventEnum> beerOrderIdGuard;
 
     private final Action<BeerOrderStatusEnum, BeerOrderEventEnum> validateBeerOrderAction;
+    private final Action<BeerOrderStatusEnum, BeerOrderEventEnum> validationFailureAction;
     private final Action<BeerOrderStatusEnum, BeerOrderEventEnum> allocateOrderAction;
 
     @Override
@@ -53,6 +54,7 @@ public class BeerOrderStateMachineConfig extends StateMachineConfigurerAdapter<B
                 .source(BeerOrderStatusEnum.VALIDATION_PENDING)
                 .target(BeerOrderStatusEnum.VALIDATION_EXCEPTION)
                 .event(BeerOrderEventEnum.VALIDATION_FAILURE)
+                .action(validationFailureAction)
             .and().withExternal()
                 .source(BeerOrderStatusEnum.VALIDATED)
                 .target(BeerOrderStatusEnum.ALLOCATION_PENDING)
