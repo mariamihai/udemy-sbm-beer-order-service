@@ -29,6 +29,7 @@ import static com.github.jenspiegsa.wiremockextension.ManagedWireMockServer.with
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -80,7 +81,7 @@ class BeerOrderManagerImplIT {
     }
 
     @Test
-    void testNewToAllocate() throws JsonProcessingException, InterruptedException {
+    void testNewToAllocate() throws JsonProcessingException {
         String stringBeerDto = objectMapper.writeValueAsString(createBeerDto());
         wireMockServer.stubFor(get(beerService.getBeerUpcPath() + upc).willReturn(okJson(stringBeerDto)));
 
@@ -88,7 +89,12 @@ class BeerOrderManagerImplIT {
 
         BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
 
-        Thread.sleep(5000);
+        await().untilAsserted(() -> {
+            BeerOrder saved = beerOrderRepository.findById(beerOrder.getId()).get();
+
+            assertEquals(BeerOrderStatusEnum.ALLOCATION_PENDING, saved.getOrderStatus());
+        });
+
         savedBeerOrder = beerOrderRepository.findById(savedBeerOrder.getId()).get();
 
         assertNotNull(savedBeerOrder);
