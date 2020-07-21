@@ -22,6 +22,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -30,8 +31,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @SpringBootTest
@@ -84,30 +84,60 @@ class BeerOrderManagerImplIT {
     void testNewToAllocate() throws JsonProcessingException {
         String stringBeerDto = objectMapper.writeValueAsString(createBeerDto());
         wireMockServer.stubFor(get(beerService.getBeerUpcPath() + upc).willReturn(okJson(stringBeerDto)));
-
         BeerOrder beerOrder = createBeerOrder();
 
         BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
 
         await().untilAsserted(() -> {
-            BeerOrder saved = beerOrderRepository.findById(beerOrder.getId()).get();
+            Optional<BeerOrder> optionalBeerOrder = beerOrderRepository.findById(beerOrder.getId());
 
-            assertEquals(BeerOrderStatusEnum.ALLOCATED, saved.getOrderStatus());
+            assertTrue(optionalBeerOrder.isPresent());
+            assertEquals(BeerOrderStatusEnum.ALLOCATED, optionalBeerOrder.get().getOrderStatus());
         });
 
         await().untilAsserted(() -> {
-            BeerOrder saved = beerOrderRepository.findById(beerOrder.getId()).get();
-            BeerOrderLine line = saved.getBeerOrderLines().iterator().next();
+            Optional<BeerOrder> optionalBeerOrder = beerOrderRepository.findById(beerOrder.getId());
+
+            assertTrue(optionalBeerOrder.isPresent());
+            BeerOrderLine line = optionalBeerOrder.get().getBeerOrderLines().iterator().next();
 
             assertEquals(line.getOrderQuantity(), line.getQuantityAllocated());
         });
 
-        savedBeerOrder = beerOrderRepository.findById(savedBeerOrder.getId()).get();
+        Optional<BeerOrder> optionalResult = beerOrderRepository.findById(savedBeerOrder.getId());
+        assertTrue(optionalResult.isPresent());
+
+        savedBeerOrder = optionalResult.get();
 
         assertNotNull(savedBeerOrder);
         assertEquals(BeerOrderStatusEnum.ALLOCATED, savedBeerOrder.getOrderStatus());
         savedBeerOrder.getBeerOrderLines().forEach(line ->
-                assertEquals(line.getOrderQuantity(), line.getQuantityAllocated()));
+                                                   assertEquals(line.getOrderQuantity(), line.getQuantityAllocated()));
+    }
+
+    @Test
+    void testNewToPickedUp() throws JsonProcessingException {
+        String stringBeerDto = objectMapper.writeValueAsString(createBeerDto());
+        wireMockServer.stubFor(get(beerService.getBeerUpcPath() + upc).willReturn(okJson(stringBeerDto)));
+        BeerOrder beerOrder = createBeerOrder();
+
+        BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
+
+        await().untilAsserted(() -> {
+            Optional<BeerOrder> optionalBeerOrder = beerOrderRepository.findById(beerOrder.getId());
+
+            assertTrue(optionalBeerOrder.isPresent());
+            assertEquals(BeerOrderStatusEnum.ALLOCATED, optionalBeerOrder.get().getOrderStatus());
+        });
+
+        beerOrderManager.beerOrderPickedUp(savedBeerOrder.getId());
+
+        await().untilAsserted(() -> {
+            Optional<BeerOrder> optionalBeerOrder = beerOrderRepository.findById(beerOrder.getId());
+
+            assertTrue(optionalBeerOrder.isPresent());
+            assertEquals(BeerOrderStatusEnum.PICKED_UP, optionalBeerOrder.get().getOrderStatus());
+        });
     }
 
     private BeerDto createBeerDto() {
