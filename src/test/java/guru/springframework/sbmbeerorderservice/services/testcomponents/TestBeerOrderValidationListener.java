@@ -9,7 +9,7 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
-import static guru.springframework.sbmbeerorderservice.services.BeerOrderManagerImplIT.FAILED_VALIDATION;
+import static guru.springframework.sbmbeerorderservice.services.testcomponents.ITConfig.FAILED_VALIDATION;
 
 @Component
 @RequiredArgsConstructor
