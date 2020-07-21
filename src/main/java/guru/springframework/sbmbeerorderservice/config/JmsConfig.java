@@ -1,6 +1,7 @@
 package guru.springframework.sbmbeerorderservice.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import guru.springframework.sbmbeerorderservice.web.model.events.AllocateBeerOrderRequest;
 import guru.springframework.sbmbeerorderservice.web.model.events.AllocateBeerOrderResult;
 import guru.springframework.sbmbeerorderservice.web.model.events.ValidateBeerOrderRequest;
 import guru.springframework.sbmbeerorderservice.web.model.events.ValidateBeerOrderResult;
@@ -37,6 +38,7 @@ public class JmsConfig {
         Map<String,Class<?>> typeIdMappings = new HashMap<>();
         typeIdMappings.put(ValidateBeerOrderRequest.class.getSimpleName(), ValidateBeerOrderRequest.class);
         typeIdMappings.put(ValidateBeerOrderResult.class.getSimpleName(), ValidateBeerOrderResult.class);
+        typeIdMappings.put(AllocateBeerOrderRequest.class.getSimpleName(), AllocateBeerOrderRequest.class);
         typeIdMappings.put(AllocateBeerOrderResult.class.getSimpleName(), AllocateBeerOrderResult.class);
 
         return typeIdMappings;
