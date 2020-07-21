@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 @SpringBootTest
 @ExtendWith(WireMockExtension.class)
-class BeerOrderManagerImplIT {
+public class BeerOrderManagerImplIT {
 
     @Autowired
     BeerOrderManager beerOrderManager;
@@ -60,6 +60,8 @@ class BeerOrderManagerImplIT {
 
     UUID beerId = UUID.randomUUID();
     String upc = "12345";
+
+    public static final String FAILED_VALIDATION = "fail-validation";
 
     @TestConfiguration
     static class RestTemplateBuilderProvider {
@@ -113,6 +115,23 @@ class BeerOrderManagerImplIT {
         assertEquals(BeerOrderStatusEnum.ALLOCATED, savedBeerOrder.getOrderStatus());
         savedBeerOrder.getBeerOrderLines().forEach(line ->
                                                    assertEquals(line.getOrderQuantity(), line.getQuantityAllocated()));
+    }
+
+    @Test
+    void testFailedValidation() throws JsonProcessingException {
+        String stringBeerDto = objectMapper.writeValueAsString(createBeerDto());
+        wireMockServer.stubFor(get(beerService.getBeerUpcPath() + upc).willReturn(okJson(stringBeerDto)));
+        BeerOrder beerOrder = createBeerOrder();
+        beerOrder.setCustomerRef(FAILED_VALIDATION);
+
+        beerOrderManager.newBeerOrder(beerOrder);
+
+        await().untilAsserted(() -> {
+            Optional<BeerOrder> optionalBeerOrder = beerOrderRepository.findById(beerOrder.getId());
+
+            assertTrue(optionalBeerOrder.isPresent());
+            assertEquals(BeerOrderStatusEnum.VALIDATION_EXCEPTION, optionalBeerOrder.get().getOrderStatus());
+        });
     }
 
     @Test

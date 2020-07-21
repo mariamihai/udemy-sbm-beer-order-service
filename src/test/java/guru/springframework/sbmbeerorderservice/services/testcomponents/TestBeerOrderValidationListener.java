@@ -9,6 +9,8 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
+import static guru.springframework.sbmbeerorderservice.services.BeerOrderManagerImplIT.FAILED_VALIDATION;
+
 @Component
 @RequiredArgsConstructor
 public class TestBeerOrderValidationListener {
@@ -21,8 +23,12 @@ public class TestBeerOrderValidationListener {
 
         ValidateBeerOrderResult result = ValidateBeerOrderResult.builder()
                 .beerOrderId(request.getBeerOrderDto().getId())
-                .valid(true)
+                .valid(isValidRequest(request.getBeerOrderDto().getCustomerRef()))
                 .build();
         jmsMessageService.sendJmsMessage(JmsConfig.VALIDATE_ORDER_RESULT_QUEUE, result, ValidateBeerOrderResult.class.getSimpleName()) ;
+    }
+
+    private boolean isValidRequest(String customerRef) {
+        return !FAILED_VALIDATION.equals(customerRef);
     }
 }
