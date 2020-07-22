@@ -19,6 +19,7 @@ public class JmsConfig {
     public static final String ALLOCATE_ORDER_QUEUE = "allocate-order";
     public static final String ALLOCATE_ORDER_RESPONSE_QUEUE = "allocate-order-response";
     public static final String ALLOCATE_ORDER_FAILED_QUEUE = "allocate-order-failed";
+    public static final String DEALLOCATE_ORDER_QUEUE = "de-allocate-order";
 
     @Bean
     public MessageConverter messageConverter(ObjectMapper objectMapper) {
@@ -34,9 +35,11 @@ public class JmsConfig {
 
     private Map<String,Class<?>> setClassMappings() {
         Map<String,Class<?>> typeIdMappings = new HashMap<>();
+
         typeIdMappings.put(ValidateBeerOrderRequest.class.getSimpleName(), ValidateBeerOrderRequest.class);
         typeIdMappings.put(ValidateBeerOrderResult.class.getSimpleName(), ValidateBeerOrderResult.class);
         typeIdMappings.put(AllocateBeerOrderRequest.class.getSimpleName(), AllocateBeerOrderRequest.class);
+        typeIdMappings.put(DeallocateBeerOrderRequest.class.getSimpleName(), DeallocateBeerOrderRequest.class);
         typeIdMappings.put(AllocateBeerOrderResult.class.getSimpleName(), AllocateBeerOrderResult.class);
         typeIdMappings.put(AllocationFailureEvent.class.getSimpleName(), AllocationFailureEvent.class);
 
