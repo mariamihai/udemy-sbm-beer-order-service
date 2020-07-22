@@ -36,7 +36,7 @@ public class DeallocateOrderAction implements Action<BeerOrderStatusEnum, BeerOr
         optionalBeerOrder.ifPresentOrElse(beerOrder -> {
             jmsMessageService.sendJmsMessage(JmsConfig.DEALLOCATE_ORDER_QUEUE,
                     DeallocateBeerOrderRequest.builder().beerOrderDto(beerOrderMapper.beerOrderToDto(beerOrder)).build(),
-                    DeallocateOrderAction.class.getSimpleName());
+                    DeallocateBeerOrderRequest.class.getSimpleName());
 
             log.debug("Sent Allocation Request for beerOrderId - " + beerOrderId);
         }, () -> log.error("Couldn't send Allocation Request for beerOrderId - " + beerOrderId));

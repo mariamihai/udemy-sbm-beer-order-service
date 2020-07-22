@@ -9,6 +9,7 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
+import static guru.springframework.sbmbeerorderservice.services.testcomponents.ITUtil.VALIDATION_CANCEL_ORDER;
 import static guru.springframework.sbmbeerorderservice.services.testcomponents.ITUtil.FAILED_VALIDATION;
 
 @Component
@@ -21,6 +22,8 @@ public class TestBeerOrderValidationListener {
     public void listen(Message<ValidateBeerOrderRequest> message) {
         ValidateBeerOrderRequest request = message.getPayload();
 
+        if(isIgnoredMessageToCancelOrder(request.getBeerOrderDto().getCustomerRef())) return;
+
         ValidateBeerOrderResult result = ValidateBeerOrderResult.builder()
                 .beerOrderId(request.getBeerOrderDto().getId())
                 .valid(isValidRequest(request.getBeerOrderDto().getCustomerRef()))
@@ -30,5 +33,9 @@ public class TestBeerOrderValidationListener {
 
     private boolean isValidRequest(String customerRef) {
         return !FAILED_VALIDATION.equals(customerRef);
+    }
+
+    private boolean isIgnoredMessageToCancelOrder(String customerRef) {
+        return VALIDATION_CANCEL_ORDER.equals(customerRef);
     }
 }

@@ -19,6 +19,8 @@ public class TestBeerOrderAllocationListener {
 
     @JmsListener(destination = JmsConfig.ALLOCATE_ORDER_QUEUE)
     public void listen(AllocateBeerOrderRequest request) {
+        if(isIgnoredMessageToCancelOrder(request.getBeerOrderDto().getCustomerRef())) return;
+
         boolean pendingInventory = isPendingInventory(request.getBeerOrderDto().getCustomerRef());
         allocateBeerOrderLines(request.getBeerOrderDto(), pendingInventory);
 
@@ -48,5 +50,9 @@ public class TestBeerOrderAllocationListener {
 
     private boolean isPendingInventory(String customerRef) {
         return PARTIAL_ALLOCATION.equals(customerRef);
+    }
+
+    private boolean isIgnoredMessageToCancelOrder(String customerRef) {
+        return ALLOCATION_CANCEL_ORDER.equals(customerRef);
     }
 }

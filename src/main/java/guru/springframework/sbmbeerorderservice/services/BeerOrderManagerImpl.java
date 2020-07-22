@@ -126,6 +126,14 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
                                  () -> log.error(ERROR_MESSAGE + beerOrderId));
     }
 
+    @Override
+    public void cancelBeerOrder(UUID beerOrderId) {
+        Optional<BeerOrder> optionalBeerOrder = beerOrderRepository.findById(beerOrderId);
+        optionalBeerOrder
+                .ifPresentOrElse(canceledBeerOrder -> sendBeerOrderEvent(canceledBeerOrder, BeerOrderEventEnum.CANCEL_ORDER),
+                        () -> log.error(ERROR_MESSAGE + beerOrderId));
+    }
+
     private void sendBeerOrderEvent(BeerOrder beerOrder,
                                     BeerOrderEventEnum event) {
         StateMachine<BeerOrderStatusEnum, BeerOrderEventEnum> stateMachine = build(beerOrder);

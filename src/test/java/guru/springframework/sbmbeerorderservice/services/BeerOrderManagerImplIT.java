@@ -13,6 +13,7 @@ import guru.springframework.sbmbeerorderservice.repositories.CustomerRepository;
 import guru.springframework.sbmbeerorderservice.services.beer.BeerService;
 import guru.springframework.sbmbeerorderservice.web.model.events.AllocationFailureEvent;
 import guru.springframework.sbmbeerorderservice.web.model.events.BeerDto;
+import guru.springframework.sbmbeerorderservice.web.model.events.DeallocateBeerOrderRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static guru.springframework.sbmbeerorderservice.config.JmsConfig.ALLOCATE_ORDER_FAILED_QUEUE;
+import static guru.springframework.sbmbeerorderservice.config.JmsConfig.DEALLOCATE_ORDER_QUEUE;
 import static guru.springframework.sbmbeerorderservice.services.testcomponents.ITUtil.*;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
@@ -152,6 +154,46 @@ class BeerOrderManagerImplIT {
 
         beerOrderManager.beerOrderPickedUp(savedBeerOrder.getId());
         assertStatusChange(savedBeerOrder.getId(), BeerOrderStatusEnum.PICKED_UP);
+    }
+
+    @Test
+    void testValidationPendingToCanceled() throws JsonProcessingException {
+        stubForBeerUpc();
+        BeerOrder beerOrder = createBeerOrder(VALIDATION_CANCEL_ORDER);
+
+        BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
+        assertStatusChange(savedBeerOrder.getId(), BeerOrderStatusEnum.VALIDATION_PENDING);
+
+        beerOrderManager.cancelBeerOrder(savedBeerOrder.getId());
+        assertStatusChange(savedBeerOrder.getId(), BeerOrderStatusEnum.CANCELLED);
+    }
+
+    @Test
+    void testAllocationPendingToCanceled() throws JsonProcessingException {
+        stubForBeerUpc();
+        BeerOrder beerOrder = createBeerOrder(ALLOCATION_CANCEL_ORDER);
+
+        BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
+        assertStatusChange(savedBeerOrder.getId(), BeerOrderStatusEnum.ALLOCATION_PENDING);
+
+        beerOrderManager.cancelBeerOrder(savedBeerOrder.getId());
+        assertStatusChange(savedBeerOrder.getId(), BeerOrderStatusEnum.CANCELLED);
+    }
+
+    @Test
+    void testAllocationToCanceled() throws JsonProcessingException {
+        stubForBeerUpc();
+        BeerOrder beerOrder = createBeerOrder();
+
+        BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
+        assertStatusChange(savedBeerOrder.getId(), BeerOrderStatusEnum.ALLOCATED);
+
+        beerOrderManager.cancelBeerOrder(savedBeerOrder.getId());
+        assertStatusChange(savedBeerOrder.getId(), BeerOrderStatusEnum.CANCELLED);
+
+        DeallocateBeerOrderRequest request = (DeallocateBeerOrderRequest) jmsTemplate.receiveAndConvert(DEALLOCATE_ORDER_QUEUE);
+        assertNotNull(request);
+        assertEquals(savedBeerOrder.getId(), request.getBeerOrderDto().getId());
     }
 
     private void assertStatusChange(UUID beerOrderId, BeerOrderStatusEnum status) {
