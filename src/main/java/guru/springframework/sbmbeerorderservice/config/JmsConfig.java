@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.springframework.sbmbeerorderservice.web.model.events.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
 
+import javax.jms.ConnectionFactory;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,5 +46,15 @@ public class JmsConfig {
         typeIdMappings.put(AllocationFailureEvent.class.getSimpleName(), AllocationFailureEvent.class);
 
         return typeIdMappings;
+    }
+
+    @Bean
+    public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory,
+                                                                          JmsErrorHandler errorHandler) {
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        factory.setConnectionFactory(connectionFactory);
+        factory.setErrorHandler(errorHandler);
+
+        return factory;
     }
 }
