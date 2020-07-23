@@ -50,10 +50,12 @@ public class JmsConfig {
 
     @Bean
     public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory,
-                                                                          JmsErrorHandler errorHandler) {
+                                                                          JmsErrorHandler errorHandler,
+                                                                          MessageConverter messageConverter) {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
         factory.setErrorHandler(errorHandler);
+        factory.setMessageConverter(messageConverter);
 
         return factory;
     }
