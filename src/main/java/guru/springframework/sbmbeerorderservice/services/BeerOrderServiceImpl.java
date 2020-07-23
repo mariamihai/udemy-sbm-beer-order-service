@@ -1,8 +1,8 @@
 package guru.springframework.sbmbeerorderservice.services;
 
 import guru.springframework.sbmbeerorderservice.domain.BeerOrder;
-import guru.springframework.sbmbeerorderservice.domain.Customer;
 import guru.springframework.sbmbeerorderservice.domain.BeerOrderStatusEnum;
+import guru.springframework.sbmbeerorderservice.domain.Customer;
 import guru.springframework.sbmbeerorderservice.repositories.BeerOrderRepository;
 import guru.springframework.sbmbeerorderservice.repositories.CustomerRepository;
 import guru.springframework.sbmbeerorderservice.web.controllers.NotFoundException;
@@ -15,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -48,7 +47,6 @@ public class BeerOrderServiceImpl implements BeerOrderService {
     }
 
     @Override
-    @Transactional
     public BeerOrderDto placeOrder(UUID customerId, BeerOrderDto beerOrderDto) {
         Optional<Customer> customerOptional = customerRepository.findById(customerId);
 
@@ -61,7 +59,6 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
             BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrderMapper.dtoToBeerOrder(beerOrderDto));
 
-            log.debug("Saved Beer Order: " + savedBeerOrder.getId());
             return beerOrderMapper.beerOrderToDto(savedBeerOrder);
         }
 
