@@ -41,14 +41,21 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
         beerOrder.setOrderStatus(BeerOrderStatusEnum.NEW);
 
         BeerOrder savedBeerOrder = beerOrderRepository.saveAndFlush(beerOrder);
+        log.debug("Saved Beer Order: " + savedBeerOrder.getId());
+
         sendBeerOrderEvent(savedBeerOrder, BeerOrderEventEnum.VALIDATE_ORDER);
 
         return savedBeerOrder;
     }
 
     @Override
-    @Transactional
     public void validateBeerOrder(UUID beerOrderId, boolean valid) {
+        awaitBeforeValidation(beerOrderId);
+        validate(beerOrderId, valid);
+    }
+
+    @Transactional
+    public void validate(UUID beerOrderId, boolean valid) {
         Optional<BeerOrder> optionalBeerOrder = beerOrderRepository.findById(beerOrderId);
 
         optionalBeerOrder.ifPresentOrElse(beerOrder -> {
@@ -170,6 +177,8 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
     }
 
     private void awaitForStatus(UUID beerOrderId, BeerOrderStatusEnum statusEnum) {
+        log.debug("Waiting for the status change for " + beerOrderId + " to status " + statusEnum.name());
+
         AtomicBoolean found = new AtomicBoolean(false);
         AtomicInteger loopCount = new AtomicInteger(0);
 
@@ -187,7 +196,35 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
                     log.debug("Order status not equal: expected: " + statusEnum.name() +
                               " and found: " + beerOrder.getOrderStatus().name());
                 }
-            }, () -> log.debug(" beerOrderId not found"));
+            }, () -> log.debug(" beerOrderId not found - " + beerOrderId));
+
+            if (!found.get()) {
+                try {
+                    log.debug("Sleeping for retry");
+                    Thread.sleep(100);
+                } catch (Exception e) {
+                    log.error("Error encountered");
+                }
+            }
+        }
+    }
+
+    private void awaitBeforeValidation(UUID beerOrderId) {
+        log.debug("Waiting for the db save before validation for " + beerOrderId);
+
+        AtomicBoolean found = new AtomicBoolean(false);
+        AtomicInteger loopCount = new AtomicInteger(0);
+
+        while (!found.get()) {
+            if (loopCount.incrementAndGet() > 10) {
+                found.set(true);
+                log.debug("Loop retries exceeded");
+            }
+
+            beerOrderRepository.findById(beerOrderId).ifPresent(beerOrder -> {
+                found.set(true);
+                log.debug("Order found");
+            });
 
             if (!found.get()) {
                 try {
