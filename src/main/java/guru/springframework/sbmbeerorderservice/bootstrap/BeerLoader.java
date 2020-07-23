@@ -28,7 +28,7 @@ public class BeerLoader implements CommandLineRunner {
     }
 
     private void loadCustomerData() {
-        if (customerRepository.count() == 0) {
+        if (isTastingRoomCustomerAlreadySaved()) {
             Customer savedCustomer = customerRepository.save(Customer.builder()
                     .customerName(TASTING_ROOM)
                     .apiKey(UUID.randomUUID())
@@ -36,5 +36,9 @@ public class BeerLoader implements CommandLineRunner {
 
             log.debug("Saved 'Tasting Room' customer with customerId = " + savedCustomer.getId());
         }
+    }
+
+    private boolean isTastingRoomCustomerAlreadySaved() {
+        return !customerRepository.findAllByCustomerNameLike(TASTING_ROOM).isEmpty();
     }
 }
