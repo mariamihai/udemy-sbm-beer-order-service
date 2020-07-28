@@ -11,5 +11,7 @@ public interface BeerOrderLineMapper {
 
     BeerOrderLineDto beerOrderLineToDto(BeerOrderLine line);
 
+//    @Mapping(target = "beerOrder.id", source = "beerId")
+//    @Mapping(target = "beerId", source = "beerId")
     BeerOrderLine dtoToBeerOrderLine(BeerOrderLineDto dto);
 }
