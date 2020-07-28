@@ -57,7 +57,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
             beerOrder.getBeerOrderLines().forEach(line -> line.setBeerOrder(beerOrder));
 
-            BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrderMapper.dtoToBeerOrder(beerOrderDto));
+            BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
 
             return beerOrderMapper.beerOrderToDto(savedBeerOrder);
         }
