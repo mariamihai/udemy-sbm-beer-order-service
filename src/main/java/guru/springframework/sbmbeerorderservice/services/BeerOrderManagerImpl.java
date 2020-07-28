@@ -185,22 +185,16 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
         while (!found.get()) {
             if (loopCount.incrementAndGet() > 10) {
                 found.set(true);
-                log.debug("Loop retries exceeded");
             }
 
             beerOrderRepository.findById(beerOrderId).ifPresentOrElse(beerOrder -> {
                 if (beerOrder.getOrderStatus().equals(statusEnum)) {
                     found.set(true);
-                    log.debug("Order found");
-                } else {
-                    log.debug("Order status not equal: expected: " + statusEnum.name() +
-                              " and found: " + beerOrder.getOrderStatus().name());
                 }
             }, () -> log.debug(" beerOrderId not found - " + beerOrderId));
 
             if (!found.get()) {
                 try {
-                    log.debug("Sleeping for retry");
                     Thread.sleep(100);
                 } catch (Exception e) {
                     log.error("Error encountered");
@@ -218,17 +212,12 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
         while (!found.get()) {
             if (loopCount.incrementAndGet() > 10) {
                 found.set(true);
-                log.debug("Loop retries exceeded");
             }
 
-            beerOrderRepository.findById(beerOrderId).ifPresent(beerOrder -> {
-                found.set(true);
-                log.debug("Order found");
-            });
+            beerOrderRepository.findById(beerOrderId).ifPresent(beerOrder -> found.set(true));
 
             if (!found.get()) {
                 try {
-                    log.debug("Sleeping for retry");
                     Thread.sleep(100);
                 } catch (Exception e) {
                     log.error("Error encountered");
