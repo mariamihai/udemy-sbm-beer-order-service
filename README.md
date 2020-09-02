@@ -4,8 +4,27 @@
 # SBM Beer Order Service
 Spring Boot Microservice project.
 
+  - [API Version](#api-version)
+  - [Docker images](#docker-images)
+  - [Implementation Details](#implementation-details)
+    - [Properties](#properties)
+    - [Environment variables for running locally](#environment-variables-for-running-locally)
+    - [Available states](#available-states)
+    - [API calls](#api-calls)
+      - [Customer calls](#customer-calls)
+        - [Obtain all customers](#obtain-all-customers)
+      - [Beer Order calls](#beer-order-calls)
+        - [Obtain all orders for customer](#obtain-all-orders-for-customer)
+        - [Place new order for customer](#place-new-order-for-customer)
+        - [Obtain order for customer](#obtain-order-for-customer)
+        - [Pickup order for customer](#pickup-order-for-customer)
+        - [Cancel order](#cancel-order)
+
 ## Description
 The current project is part of the "Spring Boot Microservices with Spring Cloud" [Udemy course](https://www.udemy.com/course/spring-boot-microservices-with-spring-cloud-beginner-to-guru/). 
+
+The project constantly places new orders, which are validated against the [Beer Service](https://github.com/mariamihai/udemy-sbm-beer-service) 
+and allocated by the [Beer Inventory Service](https://github.com/mariamihai/udemy-sbm-beer-inventory-service).
 
 An overview of all the projects involved can be found [here](https://github.com/mariamihai/udemy-sbm-overview).
 
@@ -16,9 +35,6 @@ the existing endpoints.
 ## Docker images
 Automatic building was not implemented for this project. The `latest` tag contains the best implementation considered 
 appropriate to be used.
-
-The project constantly places new orders, which are validated against the [Beer Service](https://github.com/mariamihai/udemy-sbm-beer-service) 
-and allocated by the [Beer Inventory Service](https://github.com/mariamihai/udemy-sbm-beer-inventory-service).
 
 For automatic building of Docker images check the next projects:
 - for [CircleCI](https://github.com/mariamihai/CIToDockerExampleProject)
@@ -195,6 +211,7 @@ BEER_SERVICE_HOST, which should be set for both environments. For local use, the
     ``` 
     
     ```
+    
 ##### Cancel order
 No endpoint was added for the actual cancelling of an order but a status and an event are added for this possibility.
 All states and associated actions (including the cancelling of an order) have been tested under the `BeerOrderManagerImplIT` class.
