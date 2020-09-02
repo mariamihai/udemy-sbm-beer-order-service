@@ -40,7 +40,7 @@ BEER_SERVICE_HOST, which should be set for both environments. For local use, the
 
  * __URL params:__ <br/>
     * required: - <br/>
-    * optional: - <br/>
+    * optional: <br/>
         pageNumber=[int] <br/>
         pageSize=[int]
     
@@ -65,9 +65,9 @@ BEER_SERVICE_HOST, which should be set for both environments. For local use, the
  * __Method:__ _GET_
 
  * __URL params:__ <br/>
-    * required: - <br/>
+    * required: <br/>
         customerId=[uuid] <br/>
-    * optional: - <br/>
+    * optional: <br/>
         pageNumber=[int] <br/>
         pageSize=[int]
     
@@ -91,14 +91,13 @@ BEER_SERVICE_HOST, which should be set for both environments. For local use, the
  * __Method:__ _POST_
 
  * __URL params:__ <br/>
-    * required: - <br/>
+    * required: <br/>
         customerId=[uuid] <br/>
     * optional: - <br/>
 
  * __Data params:__ <br/>
     * required: - <br/>
-        customerId=[uuid] <br/>
-    * optional: - <br/>
+    * optional: <br/>
         beerOrderDto=[BeerOrderDto] (TODO - beerOrderDto example will be added)
         ``` 
         
@@ -124,7 +123,7 @@ BEER_SERVICE_HOST, which should be set for both environments. For local use, the
  * __Method:__ _GET_
 
  * __URL params:__ <br/>
-    * required: - <br/>
+    * required: <br/>
         customerId=[uuid] <br/>
         orderId=[uuid] <br/>
     * optional: - <br/>
@@ -149,7 +148,7 @@ BEER_SERVICE_HOST, which should be set for both environments. For local use, the
  * __Method:__ _GET_
 
  * __URL params:__ <br/>
-    * required: - <br/>
+    * required: <br/>
         customerId=[uuid] <br/>
         orderId=[uuid] <br/>
     * optional: - <br/>
