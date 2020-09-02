@@ -4,6 +4,7 @@
 # SBM Beer Order Service
 Spring Boot Microservice project.
 
+  - [Description](#description)
   - [API Version](#api-version)
   - [Docker images](#docker-images)
   - [Implementation Details](#implementation-details)
