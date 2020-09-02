@@ -10,11 +10,159 @@ The initial project was split in 3 microservices:
 * SBM (Spring Boot Microservices) Beer Order Service [current project]
 * [SBM (Spring Boot Microservices) Beer Inventory Service](https://github.com/mariamihai/udemy-sbm-beer-inventory-service)
 
-## Implementation Details
-### Default port mapping - for single host
+Overview of the project [here](https://github.com/mariamihai/udemy-sbm-overview).
 
-| Service Name | Port | 
-| --------| -----|
-| [SBM Beer Service](https://github.com/mariamihai/udemy-sbm-beer-service) | 8080 |
-| SBM  Beer Order Service [current project] | 8081 |
-| [SBM Beer Inventory Service](https://github.com/mariamihai/udemy-sbm-beer-inventory-service) | 8082 |
+## API Version
+Currently the application is at _v1_.
+
+## Implementation Details
+### Properties
+```
+spring.application.name=beer-order-service
+
+server.port=8081
+```
+
+### Environment variables for running locally
+**sbm.brewery.beer-service-host** contained originally the beer service host. 
+As the project currently is being used with both Docker and running locally, I've added a new variable, 
+BEER_SERVICE_HOST, which should be set for both environments. For local use, the value should be 
+`BEER_SERVICE_HOST=http://localhost:8080 `. For creating a Docker container, the value is set in the docker-compose file.
+
+### API calls
+#### Customer calls
+##### Obtain all customers
+ * __URI:__ _/api/v1/customers/_
+
+ * __Method:__ _GET_
+
+ * __URL params:__ <br/>
+    * required: - <br/>
+    * optional: - <br/>
+        pageNumber=[int] <br/>
+        pageSize=[int]
+    
+ * __Success response:__
+    * Code: 200 <br/>
+    * Content: (TODO - response will be added)
+       ``` 
+       
+       ```
+
+ * __Error Response:__ -
+    * __Code:__  <br/>
+    * __Content:__ (TODO - response will be added)
+    ``` 
+    
+    ```
+    
+#### Beer Order calls
+##### Obtain all orders for customer
+ * __URI:__ _/api/v1/customers/:customerId/orders_
+
+ * __Method:__ _GET_
+
+ * __URL params:__ <br/>
+    * required: - <br/>
+        customerId=[uuid] <br/>
+    * optional: - <br/>
+        pageNumber=[int] <br/>
+        pageSize=[int]
+    
+ * __Success response:__
+    * Code: 200 <br/>
+    * Content: (TODO - response will be added)
+       ``` 
+       
+       ```
+
+ * __Error Response:__ -
+    * __Code:__  <br/>
+    * __Content:__ (TODO - response will be added)
+    ``` 
+    
+    ```
+    
+##### Place new order for customer
+ * __URI:__ _/api/v1/customers/:customerId/orders_
+
+ * __Method:__ _POST_
+
+ * __URL params:__ <br/>
+    * required: - <br/>
+        customerId=[uuid] <br/>
+    * optional: - <br/>
+
+ * __Data params:__ <br/>
+    * required: - <br/>
+        customerId=[uuid] <br/>
+    * optional: - <br/>
+        beerOrderDto=[BeerOrderDto] (TODO - beerOrderDto example will be added)
+        ``` 
+        
+        ```
+        
+ * __Success response:__
+    * Code: 200 <br/>
+    * Content: (TODO - response will be added)
+       ``` 
+       
+       ```
+
+ * __Error Response:__ -
+    * __Code:__  <br/>
+    * __Content:__ (TODO - response will be added)
+    ``` 
+    
+    ```
+    
+##### Obtain order for customer
+ * __URI:__ _/api/v1/customers/:customerId/orders/:orderId_
+
+ * __Method:__ _GET_
+
+ * __URL params:__ <br/>
+    * required: - <br/>
+        customerId=[uuid] <br/>
+        orderId=[uuid] <br/>
+    * optional: - <br/>
+    
+ * __Success response:__
+    * Code: 200 <br/>
+    * Content: (TODO - response will be added)
+       ``` 
+       
+       ```
+
+ * __Error Response:__ -
+    * __Code:__  <br/>
+    * __Content:__ (TODO - response will be added)
+    ``` 
+    
+    ```
+    
+##### Pickup order for customer
+ * __URI:__ _/api/v1/customers/:customerId/orders/:orderId/pickup_
+
+ * __Method:__ _GET_
+
+ * __URL params:__ <br/>
+    * required: - <br/>
+        customerId=[uuid] <br/>
+        orderId=[uuid] <br/>
+    * optional: - <br/>
+    
+ * __Success response:__
+    * Code: 200 <br/>
+    * Content: (TODO - response will be added)
+       ``` 
+       
+       ```
+
+ * __Error Response:__ -
+    * __Code:__  <br/>
+    * __Content:__ (TODO - response will be added)
+    ``` 
+    
+    ```
+    
