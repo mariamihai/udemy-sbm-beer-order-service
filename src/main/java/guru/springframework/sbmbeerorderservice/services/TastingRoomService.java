@@ -6,6 +6,7 @@ import guru.springframework.sbmbeerorderservice.repositories.CustomerRepository;
 import guru.springframework.sbmbeerorderservice.web.model.BeerOrderDto;
 import guru.springframework.sbmbeerorderservice.web.model.BeerOrderLineDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class TastingRoomService {
         availableBeerUpcs.add(BeerLoader.BEER_3_UPC);
     }
 
-//    @Scheduled(fixedRate = 120000)
+    @Scheduled(fixedRate = 12000)
     public void placeTastingRoomOrder() {
         List<Customer> customerList = customerRepository.findAllByCustomerNameLike(BeerLoader.TASTING_ROOM);
 
