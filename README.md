@@ -29,7 +29,7 @@ and allocated by the [Beer Inventory Service](https://github.com/mariamihai/udem
 
 An overview of all the projects involved can be found [here](https://github.com/mariamihai/udemy-sbm-overview).
 
-## API Version
+## API version
 _V1_ is the current implementation. No changes to the project are expected to be made in the future that will affect 
 the existing endpoints.
 
@@ -41,7 +41,7 @@ For automatic building of Docker images check the next projects:
 - for [CircleCI](https://github.com/mariamihai/CIToDockerExampleProject)
 - for [TravisCI](https://github.com/mariamihai/sma-overview) (all projects implemented under the "Spring Microservices in Action" book)
 
-## Implementation Details
+## Implementation details
 ### Properties
 - the name of the application, used by Eureka and the other services 
 ```
