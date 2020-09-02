@@ -1,4 +1,6 @@
-[![CircleCI](https://circleci.com/gh/mariamihai/udemy-sbm-beer-order-service.svg?style=svg)](https://circleci.com/gh/mariamihai/udemy-sbm-beer-order-service)
+CircleCI [![CircleCI](https://circleci.com/gh/mariamihai/udemy-sbm-beer-order-service.svg?style=svg)](https://circleci.com/gh/mariamihai/udemy-sbm-beer-order-service)
+
+Docker [![Docker](https://img.shields.io/docker/v/mariamihai/sbm-beer-order-service?sort=semver)](https://img.shields.io/docker/v/mariamihai/sbm-beer-order-service?sort=semver)
 
 # SBM Beer Order Service
 Spring Boot Microservice project
