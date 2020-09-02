@@ -5,9 +5,9 @@
 Spring Boot Microservice project.
 
   - [Description](#description)
-  - [API Version](#api-version)
+  - [API version](#api-version)
   - [Docker images](#docker-images)
-  - [Implementation Details](#implementation-details)
+  - [Implementation details](#implementation-details)
     - [Properties](#properties)
     - [Environment variables for running locally](#environment-variables-for-running-locally)
     - [Available states](#available-states)
