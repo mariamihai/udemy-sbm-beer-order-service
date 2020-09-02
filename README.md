@@ -1,35 +1,64 @@
-CircleCI [![CircleCI](https://circleci.com/gh/mariamihai/udemy-sbm-beer-order-service.svg?style=svg)](https://circleci.com/gh/mariamihai/udemy-sbm-beer-order-service)
-
-Docker [![Docker](https://img.shields.io/docker/v/mariamihai/sbm-beer-order-service?sort=semver)](https://img.shields.io/docker/v/mariamihai/sbm-beer-order-service?sort=semver)
+[![CircleCI](https://circleci.com/gh/mariamihai/udemy-sbm-beer-order-service.svg?style=svg)](https://circleci.com/gh/mariamihai/udemy-sbm-beer-order-service)
+[![Docker](https://img.shields.io/docker/v/mariamihai/sbm-beer-order-service?sort=date)](https://hub.docker.com/r/mariamihai/sbm-beer-order-service)
 
 # SBM Beer Order Service
-Spring Boot Microservice project
+Spring Boot Microservice project.
 
 ## Description
-The current project encapsulates the ordering of beer of initial [monolith brewery project](https://github.com/mariamihai/udemy-sbm-brewery-monolith).
-The initial project was split in 3 microservices:
-* [SBM (Spring Boot Microservices) Beer Service](https://github.com/mariamihai/udemy-sbm-beer-service)
-* SBM (Spring Boot Microservices) Beer Order Service [current project]
-* [SBM (Spring Boot Microservices) Beer Inventory Service](https://github.com/mariamihai/udemy-sbm-beer-inventory-service)
+The current project is part of the "Spring Boot Microservices with Spring Cloud" [Udemy course](https://www.udemy.com/course/spring-boot-microservices-with-spring-cloud-beginner-to-guru/). 
 
-Overview of the project [here](https://github.com/mariamihai/udemy-sbm-overview).
+An overview of all the projects involved can be found [here](https://github.com/mariamihai/udemy-sbm-overview).
 
 ## API Version
-Currently the application is at _v1_.
+_V1_ is the current implementation. No changes to the project are expected to be made in the future that will affect 
+the existing endpoints.
+
+## Docker images
+Automatic building was not implemented for this project. The `latest` tag contains the best implementation considered 
+appropriate to be used.
+
+The project constantly places new orders, which are validated against the [Beer Service](https://github.com/mariamihai/udemy-sbm-beer-service) 
+and allocated by the [Beer Inventory Service](https://github.com/mariamihai/udemy-sbm-beer-inventory-service).
+
+For automatic building of Docker images check the next projects:
+- for [CircleCI](https://github.com/mariamihai/CIToDockerExampleProject)
+- for [TravisCI](https://github.com/mariamihai/sma-overview) (all projects implemented under the "Spring Microservices in Action" book)
 
 ## Implementation Details
 ### Properties
+- the name of the application, used by Eureka and the other services 
 ```
 spring.application.name=beer-order-service
-
+```
+- application server port
+```
 server.port=8081
 ```
+- a new order is placed every 12 s under `TastingRoomService.placeTastingRoomOrder()` method
+- the available states for an order can be found in the StateMachine configuration java class - `BeerOrderStateMachineConfig`
 
 ### Environment variables for running locally
 **sbm.brewery.beer-service-host** contained originally the beer service host. 
+
 As the project currently is being used with both Docker and running locally, I've added a new variable, 
 BEER_SERVICE_HOST, which should be set for both environments. For local use, the value should be 
 `BEER_SERVICE_HOST=http://localhost:8080 `. For creating a Docker container, the value is set in the docker-compose file.
+
+### Available states
+|State|Description|
+|:---:|-----|
+|NEW|State associated with a newly created order.|
+|VALIDATION_PENDING|State associated with interrogating the Beer Service related to the validity of the requested beers from each beer line of the order.|
+|VALIDATED|Valid upcs for the beers from each beer line of the order.|
+|VALIDATION_EXCEPTION|Invalid upcs for at least one beer associated with the order. The compensating transaction consists of notifying the event.|
+|ALLOCATION_PENDING|Validated order needs to check existing inventory.|
+|ALLOCATED|Beer Inventory Service contains enough inventory to cover the current order.|
+|ALLOCATION_EXCEPTION| The order couldn't be process by the inventory. The compensating transaction consists of notifying the event.|
+|PENDING_INVENTORY|Order can be partially covered at the moment.|
+|PICKED_UP|An allocated order can be picked up.|
+|DELIVERED|An allocated order could be delivered. Potential state, currently not used.|
+|DELIVERY_EXCEPTION|Any potential exception or error in the delivery of the order.|
+|CANCELLED|An order can be cancelled at any time in the process, when the order is in the NEW, VALIDATION_PENDING, VALIDATED, ALLOCATION_PENDING or ALLOCATED state.|
 
 ### API calls
 #### Customer calls
@@ -166,4 +195,6 @@ BEER_SERVICE_HOST, which should be set for both environments. For local use, the
     ``` 
     
     ```
-    
+##### Cancel order
+No endpoint was added for the actual cancelling of an order but a status and an event are added for this possibility.
+All states and associated actions (including the cancelling of an order) have been tested under the `BeerOrderManagerImplIT` class.
