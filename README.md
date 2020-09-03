@@ -84,25 +84,61 @@ BEER_SERVICE_HOST, which should be set for both environments. For local use, the
 
  * __Method:__ _GET_
 
- * __URL params:__ <br/>
+ * __Query params:__ <br/>
     * required: - <br/>
-    * optional: <br/>
-        pageNumber=[int] <br/>
-        pageSize=[int]
+    * optional: - 
+ 
+  * __URL params:__ <br/>
+     * required: - <br/>
+     * optional: <br/>
+         pageNumber=[int] <br/>
+         pageSize=[int]
     
  * __Success response:__
-    * Code: 200 <br/>
-    * Content: (TODO - response will be added)
+    * Code: 200 OK <br/>
+    * Content:
        ``` 
-       
+       {
+           "content": [
+               {
+                   "customerName": "Tasting Room",
+                   "id": "cfb3291b-e0f8-4711-b188-82b8fdea17d4",
+                   "version": 0,
+                   "createdDate": "2020-09-03T12:21:44+0000",
+                   "lastModifiedDate": "2020-09-03T12:21:44+0000"
+               }
+           ],
+           "pageable": {
+               "sort": {
+                   "sorted": false,
+                   "unsorted": true,
+                   "empty": true
+               },
+               "pageNumber": 0,
+               "pageSize": 25,
+               "offset": 0,
+               "paged": true,
+               "unpaged": false
+           },
+           "totalElements": 1,
+           "last": true,
+           "totalPages": 1,
+           "first": true,
+           "sort": {
+               "sorted": false,
+               "unsorted": true,
+               "empty": true
+           },
+           "size": 25,
+           "number": 0,
+           "numberOfElements": 1,
+           "empty": false
+       }
        ```
-
- * __Error Response:__ -
-    * __Code:__  <br/>
-    * __Content:__ (TODO - response will be added)
-    ``` 
-    
-    ```
+ 
+ `pageNumber` defaults to `0`.
+ 
+ `pageSize` defaults to `25`.
     
 #### Beer Order calls
 ##### Obtain all orders for customer
@@ -113,23 +149,98 @@ BEER_SERVICE_HOST, which should be set for both environments. For local use, the
  * __URL params:__ <br/>
     * required: <br/>
         customerId=[uuid] <br/>
+    * optional: -
+
+ * __Query params:__ <br/>
+    * required: -
     * optional: <br/>
         pageNumber=[int] <br/>
-        pageSize=[int]
+        pageSize=[int] 
     
  * __Success response:__
-    * Code: 200 <br/>
-    * Content: (TODO - response will be added)
+    * Code: 200 OK <br/>
+    * Content:
        ``` 
-       
+       {
+           "content": [
+               {
+                   "customerId": "cfb3291b-e0f8-4711-b188-82b8fdea17d4",
+                   "customerRef": "8b104830-07fe-491d-ad73-6f57281a2889",
+                   "beerOrderLines": [
+                       {
+                           "upc": "0631234200036",
+                           "beerName": "Mango Bobs",
+                           "beerId": "f5d5fa59-26f2-4c55-83df-e841c9fd9c22",
+                           "beerStyle": "IPA",
+                           "price": 12.95,
+                           "orderQuantity": 1,
+                           "quantityAllocated": 1,
+                           "id": "07548945-ff8e-4a66-b29b-370d8ddb9db5",
+                           "version": 1,
+                           "createdDate": "2020-09-03T12:32:08+0000",
+                           "lastModifiedDate": "2020-09-03T12:32:08+0000"
+                       }
+                   ],
+                   "orderStatus": "ALLOCATED",
+                   "orderStatusCallbackUrl": null,
+                   "id": "00cdc8c8-ffa4-4b38-b912-49da82fa5e8b",
+                   "version": 4,
+                   "createdDate": "2020-09-03T12:32:08+0000",
+                   "lastModifiedDate": "2020-09-03T12:32:08+0000"
+               },
+               {
+                   "customerId": "cfb3291b-e0f8-4711-b188-82b8fdea17d4",
+                   "customerRef": "6b00d716-6b8e-4430-a06e-46de217158a6",
+                   "beerOrderLines": [
+                       {
+                           "upc": "0083783375213",
+                           "beerName": "Pinball Porter",
+                           "beerId": "94d47759-9e0f-4ed5-bf75-caeda6206da5",
+                           "beerStyle": "PALE_ALE",
+                           "price": 11.25,
+                           "orderQuantity": 5,
+                           "quantityAllocated": 5,
+                           "id": "88b394d0-58e1-453c-95be-4b317adeb2f0",
+                           "version": 1,
+                           "createdDate": "2020-09-03T12:57:44+0000",
+                           "lastModifiedDate": "2020-09-03T12:57:44+0000"
+                       }
+                   ],
+                   "orderStatus": "ALLOCATED",
+                   "orderStatusCallbackUrl": null,
+                   "id": "011070b0-ca17-4bfd-8e48-680a70a29889",
+                   "version": 4,
+                   "createdDate": "2020-09-03T12:57:44+0000",
+                   "lastModifiedDate": "2020-09-03T12:57:44+0000"
+               }
+           ],
+           "pageable": {
+               "sort": {
+                   "sorted": false,
+                   "unsorted": true,
+                   "empty": true
+               },
+               "pageNumber": 0,
+               "pageSize": 2,
+               "offset": 0,
+               "paged": true,
+               "unpaged": false
+           },
+           "totalElements": 386,
+           "last": false,
+           "totalPages": 193,
+           "first": true,
+           "sort": {
+               "sorted": false,
+               "unsorted": true,
+               "empty": true
+           },
+           "size": 2,
+           "number": 0,
+           "numberOfElements": 2,
+           "empty": false
+       }
        ```
-
- * __Error Response:__ -
-    * __Code:__  <br/>
-    * __Content:__ (TODO - response will be added)
-    ``` 
-    
-    ```
     
 ##### Place new order for customer
  * __URI:__ _/api/v1/customers/:customerId/orders_
@@ -144,23 +255,53 @@ BEER_SERVICE_HOST, which should be set for both environments. For local use, the
  * __Data params:__ <br/>
     * required: - <br/>
     * optional: <br/>
-        beerOrderDto=[BeerOrderDto] (TODO - beerOrderDto example will be added)
+        beerOrderDto=[BeerOrderDto]
         ``` 
-        
+        {
+            "customerRef": "8b104830-07fe-491d-ad73-6f57281a2889",
+            "beerOrderLines": [
+                {
+                    "upc": "0631234200036",
+                    "beerName": "Mango Bobs",
+                    "beerId": "f5d5fa59-26f2-4c55-83df-e841c9fd9c22",
+                    "beerStyle": "IPA",
+                    "price": 12.95,
+                    "orderQuantity": 1
+                }
+            ]
+        }
         ```
         
  * __Success response:__
-    * Code: 200 <br/>
-    * Content: (TODO - response will be added)
+    * Code: 201 CREATED <br/>
+    * Content:
        ``` 
-       
+       {
+           "customerId": "cfb3291b-e0f8-4711-b188-82b8fdea17d4",
+           "customerRef": "8b104830-07fe-491d-ad73-6f57281a2889",
+           "beerOrderLines": [
+               {
+                   "upc": "0631234200036",
+                   "beerName": "Mango Bobs",
+                   "beerId": "f5d5fa59-26f2-4c55-83df-e841c9fd9c22",
+                   "beerStyle": "IPA",
+                   "price": 12.95,
+                   "orderQuantity": 1,
+                   "quantityAllocated": null,
+                   "id": "280a3ea3-4d61-4682-ab34-697aeb99a272",
+                   "version": 0,
+                   "createdDate": "2020-09-03T13:57:06+0000",
+                   "lastModifiedDate": "2020-09-03T13:57:06+0000"
+               }
+           ],
+           "orderStatus": "VALIDATION_PENDING",
+           "orderStatusCallbackUrl": null,
+           "id": "47de2148-5e71-4056-a7cd-a36d2b4405a0",
+           "version": 1,
+           "createdDate": "2020-09-03T13:57:06+0000",
+           "lastModifiedDate": "2020-09-03T13:57:07+0000"
+       }
        ```
-
- * __Error Response:__ -
-    * __Code:__  <br/>
-    * __Content:__ (TODO - response will be added)
-    ``` 
-    
     ```
     
 ##### Obtain order for customer
@@ -175,18 +316,35 @@ BEER_SERVICE_HOST, which should be set for both environments. For local use, the
     * optional: - <br/>
     
  * __Success response:__
-    * Code: 200 <br/>
-    * Content: (TODO - response will be added)
+    * Code: 200 OK <br/>
+    * Content:
        ``` 
-       
+       {
+           "customerId": "cfb3291b-e0f8-4711-b188-82b8fdea17d4",
+           "customerRef": "8b104830-07fe-491d-ad73-6f57281a2889",
+           "beerOrderLines": [
+               {
+                   "upc": "0631234200036",
+                   "beerName": "Mango Bobs",
+                   "beerId": "f5d5fa59-26f2-4c55-83df-e841c9fd9c22",
+                   "beerStyle": "IPA",
+                   "price": 12.95,
+                   "orderQuantity": 1,
+                   "quantityAllocated": null,
+                   "id": "280a3ea3-4d61-4682-ab34-697aeb99a272",
+                   "version": 0,
+                   "createdDate": "2020-09-03T13:57:06+0000",
+                   "lastModifiedDate": "2020-09-03T13:57:06+0000"
+               }
+           ],
+           "orderStatus": "PENDING_INVENTORY",
+           "orderStatusCallbackUrl": null,
+           "id": "47de2148-5e71-4056-a7cd-a36d2b4405a0",
+           "version": 4,
+           "createdDate": "2020-09-03T13:57:06+0000",
+           "lastModifiedDate": "2020-09-03T13:57:07+0000"
+       }
        ```
-
- * __Error Response:__ -
-    * __Code:__  <br/>
-    * __Content:__ (TODO - response will be added)
-    ``` 
-    
-    ```
     
 ##### Pickup order for customer
  * __URI:__ _/api/v1/customers/:customerId/orders/:orderId/pickup_
@@ -200,18 +358,7 @@ BEER_SERVICE_HOST, which should be set for both environments. For local use, the
     * optional: - <br/>
     
  * __Success response:__
-    * Code: 200 <br/>
-    * Content: (TODO - response will be added)
-       ``` 
-       
-       ```
-
- * __Error Response:__ -
-    * __Code:__  <br/>
-    * __Content:__ (TODO - response will be added)
-    ``` 
-    
-    ```
+    * Code: 204 NO CONTENT <br/>
     
 ##### Cancel order
 No endpoint was added for the actual cancelling of an order but a status and an event are added for this possibility.
