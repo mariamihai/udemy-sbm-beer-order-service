@@ -11,15 +11,21 @@ Spring Boot Microservice project.
     - [Properties](#properties)
     - [Environment variables for running locally](#environment-variables-for-running-locally)
     - [Available states](#available-states)
-    - [API calls](#api-calls)
-      - [Customer calls](#customer-calls)
-        - [Obtain all customers](#obtain-all-customers)
-      - [Beer Order calls](#beer-order-calls)
-        - [Obtain all orders for customer](#obtain-all-orders-for-customer)
-        - [Place new order for customer](#place-new-order-for-customer)
-        - [Obtain order for customer](#obtain-order-for-customer)
-        - [Pickup order for customer](#pickup-order-for-customer)
-        - [Cancel order](#cancel-order)
+    - [Profiles](#profiles)
+    - [Additional applications needed](#additional-applications-needed)
+      - [MySQL](#mysql)
+      - [JMS with ActiveMQ Artemis](#jms-with-activemq-artemis)
+      - [Distributed Tracing with Spring Cloud Sleuth and Zipkin](#distributed-tracing-with-spring-cloud-sleuth-and-zipkin)
+  - [API calls](#api-calls)
+    - [Customer calls](#customer-calls)
+      - [Obtain all customers](#obtain-all-customers)
+    - [Beer Order calls](#beer-order-calls)
+      - [Obtain all orders for customer](#obtain-all-orders-for-customer)
+      - [Place new order for customer](#place-new-order-for-customer)
+      - [Obtain order for customer](#obtain-order-for-customer)
+      - [Pickup order for customer](#pickup-order-for-customer)
+      - [Cancel order](#cancel-order)
+
 
 ## Description
 The current project is part of the "Spring Boot Microservices with Spring Cloud" [Udemy course](https://www.udemy.com/course/spring-boot-microservices-with-spring-cloud-beginner-to-guru/). 
@@ -77,9 +83,61 @@ BEER_SERVICE_HOST, which should be set for both environments. For local use, the
 |DELIVERY_EXCEPTION|Any potential exception or error in the delivery of the order.|
 |CANCELLED|An order can be cancelled at any time in the process, when the order is in the NEW, VALIDATION_PENDING, VALIDATED, ALLOCATION_PENDING or ALLOCATED state.|
 
-### API calls
-#### Customer calls
-##### Obtain all customers
+### Profiles
+Active profiles: `local`, `local-discovery`.
+
+(The `localmysql` profile was used for the local MySQL connection when starting to develop the services and breaking 
+the monolith, the `local` profile is obtained from the Config Service and it is used currently.)
+
+### Additional applications needed
+#### MySQL
+When running locally, I am using a Docker container for the MySQL databases. Check the Docker Hub [MySQL page](https://hub.docker.com/_/mysql).
+
+Creating the container:
+```
+docker run -p 3306:3306 --name beer-mysql -e MYSQL_ROOT_PASSWORD=root_pass -d mysql:8
+```
+
+The initial script for the project's database is under `src/main/scripts/mysql-init.sql` file.
+
+| Property | Value | 
+| --------| -----|
+| database name | beerorderservice; |
+| port | 3306 (default) |
+| username | beer_order_service |
+| password | password | 
+
+#### JMS with ActiveMQ Artemis
+JMS is used for communication with the Beer Inventory Service and Beer Order Service.
+
+Creating the container:
+```
+docker run -it --rm -p 8161:8161 -p 61616:61616 vromero/activemq-artemis
+```
+
+The queues related to the current project are:
+
+- `validate-order` - sending request for validating an order to the Beer Service
+- `validate-order-result` - receiving the result back from the Beer Service
+- `allocate-order` - sends an allocation request for an order to the Beer Inventory Service
+- `allocate-order-response` - receives the result of the allocation from the Beer Inventory Service
+- `allocate-order-failed` - not implemented - receives an exceptional case for the failed allocation (database issue, etc.)
+- `de-allocate-order` - receives a deallocation response from the Beer Inventory Service if the order was invalidated
+
+| Property | Value | 
+| --------| -----|
+| username | artemis |
+| password | simetraehcapa | 
+
+#### Distributed Tracing with Spring Cloud Sleuth and Zipkin
+Creating the Zipkin container:
+```
+docker run --name zipkin -p 9411:9411 openzipkin/zipkin
+```
+
+## API calls
+### Customer calls
+#### Obtain all customers
  * __URI:__ _/api/v1/customers/_
 
  * __Method:__ _GET_
@@ -140,8 +198,8 @@ BEER_SERVICE_HOST, which should be set for both environments. For local use, the
  
  `pageSize` defaults to `25`.
     
-#### Beer Order calls
-##### Obtain all orders for customer
+### Beer Order calls
+#### Obtain all orders for customer
  * __URI:__ _/api/v1/customers/:customerId/orders_
 
  * __Method:__ _GET_
@@ -242,7 +300,7 @@ BEER_SERVICE_HOST, which should be set for both environments. For local use, the
        }
        ```
     
-##### Place new order for customer
+#### Place new order for customer
  * __URI:__ _/api/v1/customers/:customerId/orders_
 
  * __Method:__ _POST_
@@ -304,7 +362,7 @@ BEER_SERVICE_HOST, which should be set for both environments. For local use, the
        ```
     ```
     
-##### Obtain order for customer
+#### Obtain order for customer
  * __URI:__ _/api/v1/customers/:customerId/orders/:orderId_
 
  * __Method:__ _GET_
@@ -346,7 +404,7 @@ BEER_SERVICE_HOST, which should be set for both environments. For local use, the
        }
        ```
     
-##### Pickup order for customer
+#### Pickup order for customer
  * __URI:__ _/api/v1/customers/:customerId/orders/:orderId/pickup_
 
  * __Method:__ _GET_
@@ -360,6 +418,6 @@ BEER_SERVICE_HOST, which should be set for both environments. For local use, the
  * __Success response:__
     * Code: 204 NO CONTENT <br/>
     
-##### Cancel order
+#### Cancel order
 No endpoint was added for the actual cancelling of an order but a status and an event are added for this possibility.
 All states and associated actions (including the cancelling of an order) have been tested under the `BeerOrderManagerImplIT` class.
